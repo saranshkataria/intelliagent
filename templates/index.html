@@ -5,31 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>IntelliAgent</title>
     <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+
     <style>
       body {
-        background-color: #f8f9fa;
+        background-color: #f2f2f2; /* Soft grey background */
+        font-family: "Roboto", sans-serif;
+        color: #333; /* Dark text color */
       }
       .container {
         margin-top: 50px;
       }
       .card {
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 20px;
+        background-color: #ffffff; /* White card background */
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
       }
-      .card-header {
-        background-color: #007bff;
-        color: white;
-        border-radius: 10px 10px 0 0;
+      .card-body {
+        background-color: #f2f2f2; /* Soft grey background for card body */
+        border-radius: 0 0 20px 20px; /* Ensure smooth transition from header to body */
+      }
+      div.card > div.card-header {
+        background: linear-gradient(
+          to right,
+          #b4e3ff,
+          #80c1ff
+        ); /* Gradient for card header */
+        color: #333;
+        border-radius: 20px 20px 0 0;
+        padding: 20px;
+        font-weight: bold;
       }
       .btn-primary {
-        background-color: #007bff;
+        background-color: #007bff; /* Blue primary button */
         border: none;
+        padding: 15px 30px;
+        font-weight: bold;
+        font-size: 18px;
+        border-radius: 30px;
+        transition: background-color 0.3s ease;
       }
       .btn-primary:hover {
-        background-color: #0056b3;
+        background-color: #0056b3; /* Darker blue on hover */
+      }
+      .spinner {
+        display: none;
+      }
+      #response {
+        display: none;
+      }
+      #response pre {
+        background-color: #ffffff; /* White background for response */
+        white-space: pre-wrap;
+        padding: 20px;
+        border-radius: 20px;
+        overflow-x: auto;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow for response */
+      }
+      #response h5 {
+        margin-top: 30px;
+        margin-bottom: 15px;
+        font-weight: bold;
+      }
+      #description {
+        resize: none;
+      }
+      .form-label {
+        display: flex;
+        align-items: center;
+        font-size: 18px;
+        color: #333;
+        background-color: #ffffff; /* White background for form label */
+        padding: 10px 20px;
+        border-radius: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow for form label */
+      }
+      .icon {
+        font-size: 24px;
+        margin-right: 20px;
+      }
+      .form-label-header {
+        padding-left: 10px;
       }
     </style>
   </head>
@@ -41,24 +107,35 @@
         </div>
         <div class="card-body">
           <form id="query-form">
-            <div class="mb-3">
-              <label for="description" class="form-label"
-                >Project Description</label
-              >
+            <div class="mb-4">
+              <label for="description" class="form-label">
+                <i class="fas fa-lightbulb text-warning mr-2"></i>
+                <span class="form-label-header">
+                  How can IntelliAgent help with your project allocation
+                  requirements?
+                </span>
+              </label>
+
               <textarea
                 class="form-control"
                 id="description"
-                rows="3"
-                placeholder="Describe your project here..."
+                rows="5"
+                placeholder="Please describe your project requirements here..."
               ></textarea>
             </div>
             <button type="submit" class="btn btn-primary">Ask</button>
+            <div class="text-center spinner" id="spinner">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <div class="mt-2">Analyzing...</div>
+            </div>
           </form>
           <div id="response" class="mt-4">
             <h5>Roles Needed</h5>
             <pre id="roles-needed"></pre>
-            <h5>Best Candidates</h5>
-            <pre id="best-candidates"></pre>
+            <!-- <h5>Best Candidates</h5>
+                <pre id="best-candidates"></pre> -->
           </div>
         </div>
       </div>
@@ -69,6 +146,7 @@
         .addEventListener("submit", async function (e) {
           e.preventDefault();
           const description = document.getElementById("description").value;
+          document.getElementById("spinner").style.display = "block";
           const response = await fetch("/ask", {
             method: "POST",
             headers: {
@@ -77,9 +155,9 @@
             body: JSON.stringify({ description }),
           });
           const data = await response.json();
+          document.getElementById("spinner").style.display = "none";
+          document.getElementById("response").style.display = "block";
           document.getElementById("roles-needed").innerText = data.roles_needed;
-          document.getElementById("best-candidates").innerText =
-            data.best_candidates;
         });
     </script>
   </body>

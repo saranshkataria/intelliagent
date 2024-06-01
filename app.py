@@ -117,11 +117,9 @@ def ask():
     if not project_description:
         return jsonify({"error": "Project description is required"}), 400
 
-    # Step 1: Determine the number of people and roles needed
     initial_response = initial_chain.invoke(project_description)
     roles_needed = initial_response.split("Answer:")[-1].strip()
 
-    # Step 2: Select the best candidates for the identified roles
     selection_response = candidate_selection_chain.invoke(roles_needed)
     best_candidates = selection_response.split("Answer:")[-1].strip()
 
